@@ -13,6 +13,8 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@eslint/js": "9.12.0",
+    "@types/eslint__js": "8.42.3",
     "@types/mocha": "^10.0.8",
     "@types/node": "20.x",
     "@types/vscode": "^1.94.0",
@@ -20,9 +22,10 @@
     "@typescript-eslint/parser": "^8.7.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
-    "eslint": "^9.11.1",
+    "eslint": "9.12.0",
     "prettier": "3.3.3",
-    "typescript": "^5.6.2"
+    "typescript": "5.6.3",
+    "typescript-eslint": "8.10.0"
   },
   "engines": {
     "vscode": "^1.94.0"
