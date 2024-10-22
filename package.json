@@ -5,6 +5,7 @@
   "version": "1.0.1",
   "preview": true,
   "publisher": "seanwu",
+  "license": "MIT",
   "main": "./out/extension.js",
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -35,9 +36,6 @@
   "engines": {
     "vscode": "^1.94.0"
   },
-  "categories": [
-    "Other"
-  ],
   "activationEvents": [],
   "contributes": {
     "customEditors": [
@@ -51,5 +49,25 @@
         ]
       }
     ]
-  }
+  },
+  "homepage": "https://github.com/seanwu1105/vscode-apache-arrow",
+  "icon": "assets/images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seanwu1105/vscode-apache-arrow.git"
+  },
+  "bugs": {
+    "url": "https://github.com/seanwu1105/vscode-apache-arrow/issues",
+    "email": "seanwu1105@gmail.com"
+  },
+  "categories": [
+    "Programming Languages",
+    "Data Science",
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "multi-root ready",
+    "Apache Arrow"
+  ]
 }
