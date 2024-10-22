@@ -9,7 +9,6 @@ import type {
 } from "vscode";
 import { Disposable, Uri, window, workspace } from "vscode";
 import { Err, Ok } from "./result";
-import { getNonce } from "./utils";
 
 export class TableEditorProvider implements CustomReadonlyEditorProvider {
   public static register(): Disposable {
@@ -23,63 +22,77 @@ export class TableEditorProvider implements CustomReadonlyEditorProvider {
 
   private static readonly viewType = "apacheArrow.arrow";
 
-  openCustomDocument(
-    uri: Uri,
-    openContext: CustomDocumentOpenContext,
-  ): CustomDocument | Thenable<CustomDocument> {
-    return TableDocument.create({
-      uri,
-      backupId: openContext.backupId,
-    }).unwrap();
+  async openCustomDocument(uri: Uri, openContext: CustomDocumentOpenContext) {
+    return (
+      await TableDocument.create({ uri, backupId: openContext.backupId })
+    ).unwrap();
   }
 
   resolveCustomEditor(
-    document: CustomDocument,
+    document: TableDocument,
     webviewPanel: WebviewPanel,
   ): Thenable<void> | void {
-    webviewPanel.webview.options = { enableScripts: true };
-    webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
-    webviewPanel.webview.onDidReceiveMessage((e) => {
-      console.log(e);
+    webviewPanel.webview.html = getHtmlForWebview({
+      webview: webviewPanel.webview,
+      stringifiedTable: document.stringifiedTable,
     });
-  }
-
-  private getHtmlForWebview(webview: Webview): string {
-    const nonce = getNonce();
-
-    return `
-			<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
-
-				<!--
-				Use a content security policy to only allow loading images from https or from our extension directory,
-				and only allow scripts that have a specific nonce.
-				-->
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} blob:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
-
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-				<title>My title here</title>
-			</head>
-			<body>
-				<h1>Hello, world!</h1>
-        <p>My custom content here</p>
-        <button>Click me</button>
-        <textarea></textarea>
-        <pre>
-          <code>
-            console.log("Hello, world!");
-          </code>
-        </pre>
-			</body>
-			</html>`;
   }
 }
 
+function getHtmlForWebview({
+  webview,
+  stringifiedTable: stringifiedTableSchema,
+}: {
+  readonly webview: Webview;
+  readonly stringifiedTable: string;
+}): string {
+  const nonce = getNonce();
+
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+
+      <!--
+      Use a content security policy to only allow loading images from https or
+      from our extension directory, and only allow scripts that have a specific
+      nonce.
+      -->
+      <meta
+        http-equiv="Content-Security-Policy"
+        content="
+          default-src 'none';
+          img-src ${webview.cspSource} blob:;
+          style-src ${webview.cspSource};
+          script-src 'nonce-${nonce}';
+        "
+      >
+
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <title>Apache Arrow</title>
+    </head>
+    <body>
+      <pre>
+${stringifiedTableSchema}
+      </pre>
+    </body>
+    </html>`;
+}
+
+function getNonce() {
+  let text = "";
+  const possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (let i = 0; i < 32; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+}
+
 class TableDocument extends Disposable implements CustomDocument {
-  public static create({
+  public static async create({
     uri,
     backupId,
   }: {
@@ -97,7 +110,7 @@ class TableDocument extends Disposable implements CustomDocument {
     if (dataFile.scheme === "untitled")
       return Err(new Error("Untitled empty file is not supported."));
 
-    const table = tableFromIPC(workspace.fs.readFile(dataFile));
+    const table = tableFromIPC(await workspace.fs.readFile(dataFile));
 
     return Ok(new TableDocument(uri, table));
   }
@@ -109,6 +122,10 @@ class TableDocument extends Disposable implements CustomDocument {
     super(() => {
       this.dispose();
     });
+  }
+
+  get stringifiedTable() {
+    return this.table.schema.toString();
   }
 
   override dispose() {
