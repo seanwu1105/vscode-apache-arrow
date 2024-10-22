@@ -3,6 +3,8 @@
   "displayName": "Apache Arrow",
   "description": "Editor tools for Apache Arrow.",
   "version": "0.0.1",
+  "preview": true,
+  "publisher": "seanwu",
   "main": "./out/extension.js",
   "scripts": {
     "vscode:prepublish": "npm run compile",

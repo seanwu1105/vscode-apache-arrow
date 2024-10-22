@@ -1,0 +1,52 @@
+name: release
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    permissions:
+      contents: write
+      pull-requests: write
+
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      - name: Release Please
+        uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          release-type: node
+
+      - name: Install dependencies
+        if: steps.release.outputs.release_created
+        run: npm ci
+
+      - name: Package VSIX
+        if: steps.release.outputs.release_created
+        run: npx @vscode/vsce package
+
+      - name: Publish on Visual Studio Code Extension Marketplace
+        if: steps.release.outputs.release_created
+        run: npx @vscode/vsce publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      - name: Upload VSIX to release assets
+        if: steps.release.outputs.release_created
+        uses: shogo82148/actions-upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_path:
+            vscode-apache-arrow-${{ steps.release.outputs.major }}.${{
+            steps.release.outputs.minor }}.${{ steps.release.outputs.patch
+            }}.vsix
