@@ -2,7 +2,7 @@
   "name": "apache-arrow",
   "displayName": "Apache Arrow",
   "description": "Editor tools for Apache Arrow.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "preview": true,
   "publisher": "seanwu",
   "license": "MIT",
