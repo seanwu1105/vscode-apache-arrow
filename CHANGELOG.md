@@ -6,6 +6,13 @@ file.
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how
 to structure this file.
 
+## [1.0.2](https://github.com/seanwu1105/vscode-apache-arrow/compare/v1.0.1...v1.0.2) (2024-10-22)
+
+
+### Bug Fixes
+
+* add icon to pass release check ([9679873](https://github.com/seanwu1105/vscode-apache-arrow/commit/96798738c21a9539cf6baa29b8465567531365be))
+
 ## [1.0.1](https://github.com/seanwu1105/vscode-apache-arrow/compare/v1.0.0...v1.0.1) (2024-10-22)
 
 
