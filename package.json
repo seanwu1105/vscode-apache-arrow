@@ -2,7 +2,7 @@
   "name": "apache-arrow",
   "displayName": "Apache Arrow",
   "description": "Editor tools for Apache Arrow.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "preview": true,
   "publisher": "seanwu",
   "main": "./out/extension.js",
